@@ -12,6 +12,6 @@ layout: default
 
 <ul class="tags">
     {% for tag in page.tags %}
-        <li><a href="/tag/#{{t | downcase | replace:" ","-" }}">{{ tag | downcase }}</a></li>
+        {{ tag | downcase }}
     {% endfor %}
 </ul>
