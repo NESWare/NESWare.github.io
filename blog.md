@@ -3,6 +3,16 @@ title: blog
 layout: default
 ---
 
+<h1>Tags</h1>
+
+<ul class="tags">
+{% for tag in site.tags %}
+    {% assign t = tag | first %}
+    {% assign posts = tag | last %}
+    <li>{{t | downcase | replace:" ","-" }} has {{ posts | size }} posts</li>
+{% endfor %}
+</ul>
+
 <h1>Latest Posts</h1>
 
 <ul>
