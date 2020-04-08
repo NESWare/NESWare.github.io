@@ -2,3 +2,6 @@
   name: Home
 - link: /blog.html
   name: Blog
+- link: /about.html
+  name: About
+
