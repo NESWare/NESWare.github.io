@@ -5,3 +5,11 @@ layout: default
 <p>{{ page.date | date: "%m/%d/%Y" }} - Written by {{ page.author }}</p>
 
 {{ content }}
+
+<h3>Tags</h3>
+
+<ul class="tags">
+    {% for tag in page.tags %}
+        <li><a href="/tag/#{{t | downcase | replace:" ","-" }}">{{ tag | downcase }}</a></li>
+    {% endfor %}
+</ul>
