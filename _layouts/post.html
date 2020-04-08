@@ -1,7 +1,7 @@
 ---
-layout: default
+layout: post
 ---
 
-<p>{{ page.date }} - Written by {{ page.author }}</p>
+<p>{{ page.date | date: "%m/%d/%Y" }} - Written by {{ page.author }}</p>
 
 {{ content }}
