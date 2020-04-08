@@ -1,6 +1,4 @@
-- title: About
-  url: /about.html
-- title: Contact
-  url: /contact.html
-- title: Blog
-  url: /blog.html
+- link: /index.html
+  name: Home
+- link: /blog.html
+  name: Blog
