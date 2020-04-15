@@ -2,7 +2,7 @@
 layout: post
 title: "Hello World!"
 author: Lnk2past
-tags: ['helloworld']
+tags: helloworld
 ---
 
 This is my first post! <!--more-->
