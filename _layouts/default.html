@@ -2,9 +2,8 @@
 <html lang="{{ site.lang | default: "en-US" }}">
 
 <head>
-    {% if page.link-image %}
-        <meta property="og:image" content="{{ site.url }}/{{ page.link-img }}" />
-    {% endif %}
+    <meta property="og:image" content="{{ site.url }}/{{ page.link-img }}" />
+    <meta property="og:description" content="{{ page.title }}" />
     
     <link rel="icon" href="{{ site.baseurl }}/favicon.png" type="image/png" />
     {% if site.google_analytics %}
