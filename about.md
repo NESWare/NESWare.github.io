@@ -9,6 +9,8 @@ I started NESWare without much of a plan for making a video game (I still plan o
 
 I love coding; I love tinkering; I love making things. Most of all, I love sharing knowledge and helping others learn. NESWare will be a means for me to do all of this. Thanks for stopping by, I hope you learned something from your visit!
 
+---
+
 [<img src="/assets/images/github/GitHub-Mark-120px-plus.png" width="64" height="64">](https://github.com/NESWare)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 [<img src="/assets/images/facebook/f_logo_RGB-Blue_512.png" width="64" height="64">](https://www.facebook.com/nesware/)

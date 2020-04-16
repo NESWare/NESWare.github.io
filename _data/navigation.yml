@@ -1,7 +1,9 @@
-- link: /index.html
-  name: Home
-- link: /blog.html
-  name: Blog
-- link: /about.html
-  name: About
+- url: /index.html
+  title: Home
+- url: /blog.html
+  title: Blog
+- url: /projects.html
+  title: Projects
+- url: /about.html
+  title: About
 
