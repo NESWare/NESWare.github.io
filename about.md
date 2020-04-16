@@ -9,9 +9,13 @@ I started NESWare without much of a plan for making a video game (I still plan o
 
 I love coding; I love tinkering; I love making things. Most of all, I love sharing knowledge and helping others learn. NESWare will be a means for me to do all of this. Thanks for stopping by, I hope you learned something from your visit!
 
-Check things out at the NESWare or my personal GitHub (expect to find more at mine... for now)!
-
-[![](/assets/images/nesware/nesware-logo-textless-64px.png)](https://github.com/NESWare)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-[![](/assets/images/github/GitHub-Mark-64px.png)](https://github.com/Lnk2past)
+[<img src="/assets/images/github/GitHub-Mark-120px-plus.png" width="64" height="64">](https://github.com/NESWare)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="/assets/images/facebook/f_logo_RGB-Blue_512.png" width="64" height="64">](https://www.facebook.com/nesware/)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="/assets/images/linkedin/LI-In-Bug.png" width="75" height="64">](https://www.linkedin.com/company/nesware)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="/assets/images/twitter/Twitter_Logo_WhiteOnBlue.png" width="64" height="64">](https://twitter.com/nesware)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+[<img src="/assets/images/instagram/glyph-logo_May2016.png" width="64" height="64">](https://www.instagram.com/nesware.io)
 {: style="color:gray; font-size: 80%; text-align: center;"}
