@@ -1,10 +1,11 @@
 ---
-title: blog
+title: Blog
 layout: default
 ---
 
 # Latest Posts
 
+---
 <ul>
     {% for post in site.posts %}
         <li>
