@@ -1,12 +1,18 @@
 ---
 layout: post
 title: "Discord for a GitHub Classroom - Part 0"
+subtitle: "Background & Motivation"
 author: Lnk2past
 tags: storytime software education
 readtime: 7
 ---
 
 This post is the first (a prologue, really) in a series documenting my journey as an educator and the development of a Discord Bot that I plan on using to manage a classroom. <!--more--> Specifically, this post details the motivation behind what I have been working on and how I arrived to where I am now in 2020. There is nothing technical here, so feel free to give this one a hard pass if that is what you are looking for.
+
+#### Other Articles in this Series
+
+* [Part 0 - Background & Motivation](/2020/04/15/discord-github-classroom-pt0.html) (you are here!)
+* [Part 1 - GitHub App Basics](/2020/04/26/discord-github-classroom-pt1.html)
 
 ## Learning to Teach is Hard
 
