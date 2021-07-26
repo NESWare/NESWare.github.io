@@ -5,6 +5,8 @@ layout: default
 
 # Latest Posts
 
+Look around, you might, though unlikely, find something you like!
+
 ---
 <ul>
     {% for post in site.posts %}
