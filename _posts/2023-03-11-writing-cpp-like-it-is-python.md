@@ -42,12 +42,12 @@ A truly fantastic feature of Python is its string formatting. Formatting strings
 
 ```python
 # python
-s = f'A circle with radius {circle.radius:.2f} as an area of {area(circle):.4f}'
+s = f'A circle with radius {circle.radius:.2f} has an area of {area(circle):.4f}'
 ```
 
 ```cpp
 // c++
-auto s = std::format("A circle with radius {.2f} as an area of {:.4f}", circle.radius, area(circle));
+auto s = std::format("A circle with radius {.2f} has an area of {:.4f}", circle.radius, area(circle));
 ```
 
 The most glaring difference is the presense of f-strings in Python (not needed here, but are used to highlight this difference). Otherwise, string formatting is now largely the same in C++. If your compiler is a bit too old (compiler support for `std::format` has been slow) then you can absolutely turn to [`fmt`](https://github.com/fmtlib/fmt) to handle this for you. In fact, at this point in time though there is still very much every reason to want to use `fmt` over the standard formatting library. In addition to the everything `std::format` does, `fmt` also provides (in addition to quite a few other features):
@@ -60,7 +60,7 @@ With named parameters we can rewrite the above as:
 ```cpp
 // c++
 using namespace fmt::literals;
-auto s = fmt::format("A circle with radius {radius:.2f} as an area of {area:.4f}", "radius"_a=circle.radius, "area"_a=area(circle));
+auto s = fmt::format("A circle with radius {radius:.2f} has an area of {area:.4f}", "radius"_a=circle.radius, "area"_a=area(circle));
 ```
 
 Still not as good as Python's f-strings, but the format specification looks pretty good now! We can also easily format something like a `std::vector`:
