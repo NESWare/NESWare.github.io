@@ -1,0 +1,17 @@
+{
+  "build": { "dockerfile": "Dockerfile" },
+  "forwardPorts": [4000],
+  "customizations": {
+      // Configure properties specific to VS Code.
+      "vscode": {
+        // Add the IDs of extensions you want installed when the container is created.
+        "extensions": [
+          "ms-azuretools.vscode-docker",
+          "ms-python.python",
+          "ms-python.vscode-pylance",
+          "VisualStudioExptTeam.vscodeintellicode"
+        ]
+      }
+    }
+}
+
