@@ -27,7 +27,7 @@ One final note before we begin - visualizing models like this has been a true ga
 
 ## Updating our Code
 
-Let's first just take a look at the standalone C++ model that we want to use from Python. In case you are just catching up, this code implements a brute-force solution n-body simulation. We have many particles all interacting gravitationally with each other:
+Let's first just take a look at the standalone C++ model that we want to use from Python. In case you are just catching up, this code implements a brute-force n-body simulation. We have many particles all interacting gravitationally with each other:
 
 ```c++
 // main.cpp
