@@ -8,9 +8,11 @@ image: /assets/images/posts/2023-04-16-visualizing-a-live-cpp-model-in-python/th
 readtime: 20
 ---
 
-<img src="{{ site.baseurl }}/assets/images/posts/2023-04-16-visualizing-a-live-cpp-model-in-python/thumbnail.png"/>
+C++ lets us write fast code, but Python lets us better understand our model. <!--more--> 
 
-C++ lets us write fast code, but Python lets us better understand our model. <!--more--> Python is just too good at many things, and of the many things it is good at, it is very good at analyzing and visualizing data. Analyzing and visualizing data are usually very exploratory processes, and so that code is changing frequently. Changing Python is much easier than changing C++, and so it fits very well into that workflow.
+<img src="{{ site.baseurl }}/assets/images/posts/2023-04-16-visualizing-a-live-cpp-model-in-python/thumbnail_nologo.png"/>
+
+Python is just too good at many things, and of the many things it is good at, it is very good at analyzing and visualizing data. Analyzing and visualizing data are usually very exploratory processes, and so that code is changing frequently. Changing Python is much easier than changing C++, and so it fits very well into that workflow.
 
 For example, if we model an n-body system (perhaps like the one we breezed by [here](/2023/03/11/writing-cpp-like-it-is-python.html)), then we very clearly have a reason to want to code in C++. But we also want to analyze the model, visualize its data, or maybe script some custom control over the model. We are going to start with that code and pull it apart into a handful of pieces that make using it in Python easy.
 
