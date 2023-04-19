@@ -27,7 +27,7 @@ One final note before we begin - visualizing models like this has been a true ga
 
 ## Updating our Code
 
-Let's first just take a look at the model that we want to use from Python:
+Let's first just take a look at the standalone C++ model that we want to use from Python. In case you are just catching up, this code implements a brute-force solution n-body simulation. We have many particles all interacting gravitationally with each other:
 
 ```c++
 // main.cpp
@@ -102,7 +102,7 @@ int main() {
 }
 ```
 
-There are a few issues with how our program currently works that are not going to work well when it becomes a Python module. We are going to do the following:
+There are a few issues with how our program currently works that make using it as a Python module difficult. We are going to do the following:
 
 * Move the `Particle` class to its own header (just for simplicity)
 * Create a new class, `ParticleSystem`, that has its own header
@@ -143,7 +143,7 @@ struct ParticleSystem {
 };
 ```
 
-It is important to note that this class does not capture the while-loop! While we could have done so, the while-loop is less a part of the model and more a part of the executor of the model. It represents the flow of time, which users of the model should control.
+It is important to note that this class does not capture the while-loop! While we could have done so, the while-loop is less a part of the model and more a part of the executor of the model. It represents the flow of time, which users of the model should control. What this class *does* allow us to do is create a set of particles, and then advance their state through time.
 
 With our `ParticleSystem` class now ready we can expose it to Python using `pybind11`!
 
