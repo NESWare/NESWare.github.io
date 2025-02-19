@@ -21,6 +21,8 @@ def main():
     with open(static / ".htaccess", "w") as htaccess:
         htaccess.write("DirectoryIndex index.html")
 
+    pathlib.Path(static / ".nojekyll").touch()
+
     css = CSS(pathlib.Path("assets") / "css")
 
     content = pathlib.Path("content")
