@@ -16,12 +16,14 @@ def main():
         )
     static.mkdir()
 
-    content = pathlib.Path("content")
     shutil.copytree("./assets", static / "assets")
-
     shutil.copy("assets/images/nesware/nesware-logo-textless-64px.ico", static / "favicon.ico")
+    with open(static / ".htaccess", "w") as htaccess:
+        htaccess.write("DirectoryIndex index.html")
 
     css = CSS(pathlib.Path("assets") / "css")
+
+    content = pathlib.Path("content")
 
     def split_frontmatter_from_content(md_content: str) -> tuple[str, str]:
         if "---fm---" in md_content:
