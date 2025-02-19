@@ -2,7 +2,7 @@ title: Writing My Own Static Site Generator with Panel
 section: blog
 date: 2025-02-18
 tags: python panel
-readtime: 20
+readtime: 3
 ---fm---
 
 Ever since creating this website a few years ago, I have managed its content and generation using [`Jekyll`](https://jekyllrb.com/). I am not a web developer at all and Jekyll made it all super easy to get started. However, due to my infrequent posting, every time I would come back to write a new post, something about my environment and setup would be broken. I am not a Ruby developer either, so debugging anything was always a tad problematic. The other night I again tried to come back to write new content, and again my environment was broken...
