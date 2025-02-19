@@ -15,7 +15,7 @@ jobs:
       - name: Set up Python
         run: uv python install
       - name: Install geno
-        run: uv sync --all-extras --dev
+        run: uv sync
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -25,7 +25,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: static/
+          path: ./static/
   deploy:
     environment:
       name: github-pages
