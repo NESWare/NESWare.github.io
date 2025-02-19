@@ -91,7 +91,6 @@ def main():
             header_color="#FFFFFF",
             header_background="#009926",
             logo="assets/images/nesware/nesware-logo-textless-white.png",
-            favicon="assets/images/nesware/nesware-logo-textless-64px.png",
             main=main,
             sidebar=pn.Column(*buttons),
             sidebar_width=240,
