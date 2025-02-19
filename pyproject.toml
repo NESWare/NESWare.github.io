@@ -1,0 +1,24 @@
+[project]
+name = "geno"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.0",
+    "panel>=1.6.1",
+    "pygments>=2.19.1",
+]
+
+[dependency-groups]
+lint = [
+    "mypy>=1.15.0",
+    "ruff>=0.9.6",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+geno = "geno.main:main"

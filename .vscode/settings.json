@@ -1,0 +1,13 @@
+{
+    "editor.formatOnSave": true,
+    "editor.indentSize": 4,
+    "mypy-type-checker.path": [
+        "./.venv/bin/mypy"
+    ],
+    "ruff.path": [
+        "./.venv/bin/ruff"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff",
+    }
+}
