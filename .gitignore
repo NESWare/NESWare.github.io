@@ -1,2 +1,4 @@
-.sass-cache
-_site
+static
+*.pyc
+__pycache__
+*.egg-info

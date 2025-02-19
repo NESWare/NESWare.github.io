@@ -19,6 +19,8 @@ def main():
     content = pathlib.Path("content")
     shutil.copytree("./assets", static / "assets")
 
+    shutil.copy("assets/images/nesware/nesware-logo-textless-64px.ico", static / "favicon.ico")
+
     css = CSS(pathlib.Path("assets") / "css")
 
     def split_frontmatter_from_content(md_content: str) -> tuple[str, str]:
