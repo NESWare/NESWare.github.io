@@ -1,3 +1,6 @@
+# A proof-of-concept (that requires a ton of documentation and comments!)
+#
+
 import datetime
 
 import holoviews as hv
@@ -6,14 +9,9 @@ import pandas as pd
 import panel as pn
 import pygments
 
-
 pn.extension()
 
-stylesheets = <<<css>>>
-
-cannonball_callback = None
-sandpile_callback = None
-
+# frontmatter, implemented directly as a dict
 frontmatter = {
     "title": "Panel & Pyodide & WASM, Oh My!",
     "section": "blog",
@@ -22,16 +20,24 @@ frontmatter = {
     "readtime": 10,
 }
 
+# stylesheets; janky but we replace this string (the invalid Python) with the actual CSS overrides
+stylesheets = <<<css>>>
 
-def markdown(txt):
+# define global callbacks up here, one for each "system" we want to run 
+cannonball_callback = None
+sandpile_callback = None
+
+def markdown(txt: str) -> pn.pane.Markdown:
+    """Simple utility to produce the markdown pane with the same style"""
     return pn.pane.Markdown(
         txt,
         max_width=800,
         stylesheets=stylesheets,
     )
 
-
-def cannonball_simulation():
+def cannonball_simulation() -> None:
+    """Produces a self-contained sub-application for us to embed. This application is a simple cannon-ball simulation that lets users select a launch angle and launch speed for the cannon-ball and then launch it.
+    """
     class Cannonball:
         def __init__(self, x, y, vx, vy):
             self.x = x
@@ -44,8 +50,7 @@ def cannonball_simulation():
             self.y += self.vy * dt
             self.vy += -9.81 * dt
 
-    cb = Cannonball(0.0, 0.0, 0.0, 0.0)
-
+    # create widgets
     launch_angle_slider = pn.widgets.FloatSlider(
         name="Launch Angle (degrees)", start=0, end=90, value=45, step=1
     )
@@ -54,35 +59,45 @@ def cannonball_simulation():
     )
     launch_button = pn.widgets.Button(name="Launch!")
 
-    stream = hv.streams.Pipe(data=[])
+    # create an instance of the Cannonball class to use for the simulation
+    cannonball = Cannonball(0.0, 0.0, 0.0, 0.0)
 
-    def cannonball():
-        cb.update(0.1)
-        stream.send(pd.DataFrame({"x": [cb.x], "y": [cb.y]}))
-        if cb.y <= 0.0:
+    # function to schedule periodically; this will be called repeatedly until the simulation is over
+    # it will update the cannon-ball, stream the data, and then stop the callback (if the simulation is over).
+    def update_cannonball():
+        cannonball.update(0.1)
+        stream.send(pd.DataFrame({"x": [cannonball.x], "y": [cannonball.y]}))
+        if cannonball.y <= 0.0:
             cannonball_callback.stop()
 
+    # function to tie to the launch button; this resets the cannon-ball and schedules the simulation
     def launch(event):
         global cannonball_callback
         if cannonball_callback is not None:
             cannonball_callback.stop()
             cannonball_callback = None
 
-        cb.x = 0.0
-        cb.y = 0.0
-        cb.vx = launch_speed_slider.value * np.cos(
+        cannonball.x = 0.0
+        cannonball.y = 0.0
+        cannonball.vx = launch_speed_slider.value * np.cos(
             np.deg2rad(launch_angle_slider.value)
         )
-        cb.vy = launch_speed_slider.value * np.sin(
+        cannonball.vy = launch_speed_slider.value * np.sin(
             np.deg2rad(launch_angle_slider.value)
         )
-        cannonball_callback = pn.state.add_periodic_callback(cannonball, 50)
+        cannonball_callback = pn.state.add_periodic_callback(update_cannonball, 50)
 
+    # tie the launch function to the launch button
     launch_button.on_click(launch)
 
+    # callback to execute whenever we stream data
     def view(data):
         return hv.Points(data, kdims=["x", "y"])
 
+    # create a data stream for to animate our model data
+    stream = hv.streams.Pipe(data=[])
+
+    # dynamic map that listens to the stream
     dmap = hv.DynamicMap(view, streams=[stream]).opts(
         xlim=(0.0, 50.0),
         ylim=(0.0, 30.0),
@@ -92,12 +107,15 @@ def cannonball_simulation():
         show_grid=True,
     )
 
+    # pack everything together!
     return pn.Row(
         dmap, pn.Column(launch_angle_slider, launch_speed_slider, launch_button)
     )
 
 
 def sandpile_simulation():
+    """Produces a self-contained sub-application for us to embed. This application is a simple implementation of the Abelian Sandpile Model. Select the size of the sandpile and launch it!
+    """
     class Sandpile:
         def __init__(self, n):
             self.n = n
@@ -133,25 +151,29 @@ def sandpile_simulation():
         def stable(self):
             return np.all(self.sandpile < 4)
 
+    # create widgets
     launch_button = pn.widgets.Button(name="Launch!")
     reset_button = pn.widgets.Button(name="Reset")
     dimension_slider = pn.widgets.IntSlider(
         name="Launch Angle (degrees)", start=1, end=50, value=20, step=1
     )
 
-    asp = Sandpile(dimension_slider.value)
+    # create an instance of the Sandpile class to use for the simulation
+    sandpile = Sandpile(dimension_slider.value)
 
-    stream = hv.streams.Pipe(data=[])
-
-    def sandpile():
+    # function to schedule periodically; this will be called repeatedly until the simulation is over
+    # it will update the sandpile, stream the data, and then stop the callback (if the simulation is over).
+    def update_sandpile():
         global sandpile_callback
-        asp.collapse()
-        stream.send(asp.sandpile)
-        if asp.stable:
+        sandpile.collapse()
+        stream.send(sandpile.sandpile)
+        if sandpile.stable:
             sandpile_callback.stop()
             launch_button.name = "Launch!"
             sandpile_callback = None
 
+    # function to tie to the launch button; this resets the sandpile and schedules the simulation
+    # this can also pause and unpause the simulation
     def launch(event):
         global sandpile_callback
         if sandpile_callback is not None and sandpile_callback.running:
@@ -162,25 +184,33 @@ def sandpile_simulation():
             sandpile_callback.start()
             launch_button.name = "Stop!"
         else:
-            asp.reset(dimension_slider.value)
-            sandpile_callback = pn.state.add_periodic_callback(sandpile, 50)
+            sandpile.reset(dimension_slider.value)
+            sandpile_callback = pn.state.add_periodic_callback(update_sandpile, 50)
             launch_button.name = "Stop!"
 
+
+    # function to tie to the reset button; this resets the sandpile
+    # this will automatically trigger whenever the dimension is changed
     @pn.depends(dimension_slider, watch=True)
     def reset(event):
         global sandpile_callback
         if sandpile_callback is not None:
             sandpile_callback.stop()
         sandpile_callback = None
-        asp.reset(dimension_slider.value)
-        stream.send(asp.sandpile)
+        sandpile.reset(dimension_slider.value)
+        stream.send(sandpile.sandpile)
         launch_button.name = "Launch!"
 
+    # tie the launch and reset functions to their respective buttons
     launch_button.on_click(launch)
     reset_button.on_click(reset)
 
+    # callback to execute whenever we stream data
     def view(data):
         return hv.Image(data)
+
+    # create a data stream for to animate our model data
+    stream = hv.streams.Pipe(data=[])
 
     dmap = hv.DynamicMap(view, streams=[stream]).opts(
         xlim=(-0.5, 0.5),
@@ -197,7 +227,7 @@ def sandpile_simulation():
 
     return pn.Row(dmap, pn.Column(launch_button, reset_button, dimension_slider))
 
-
+# main content that we will ultimately inject into the application. Just start appending to it!
 main = pn.Column()
 
 main.append(
@@ -276,15 +306,16 @@ This post is a proof-of-concept to figure out how the main bits and pieces fall 
     )
 )
 
+# jank
 main.append(markdown(f"\n<script>\n    document.title = '{frontmatter['title']} | NESWare.io';</script>"))
 
+# jank
 button_config = {
     "button_type": "success",
     "button_style": "outline",
     "sizing_mode": "stretch_width",
     "stylesheets": [":hover { background-color: #e8fff4; }"],
 }
-
 buttons = []
 for page_name in ["Home", "Blog", "Projects", "About"]:
     button = pn.widgets.Button(name=page_name, **button_config)
@@ -295,6 +326,7 @@ for page_name in ["Home", "Blog", "Projects", "About"]:
 
 pn.template.BootstrapTemplate.config.raw_css.extend(stylesheets)
 
+# still need to provide a servable object, so this is the final result!
 pn.template.BootstrapTemplate(
     title="NESWare",
     header_color="#FFFFFF",
