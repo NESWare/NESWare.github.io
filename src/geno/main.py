@@ -62,7 +62,7 @@ def main():
 
         with open(new_path, "w") as nf:
             with open(py_path) as of:
-                nf.write(of.read().replace("<<<css>>>", str(css.stylesheets)))
+                nf.write(of.read().replace("<<<css>>>", str(css.stylesheets), 1))
 
         mod = load_module_from_path(new_path.stem, new_path)
 

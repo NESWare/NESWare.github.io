@@ -9,8 +9,10 @@ import pygments
 
 pn.extension()
 
-stylesheets = []
+stylesheets = <<<css>>>
 
+cannonball_callback = None
+sandpile_callback = None
 
 frontmatter = {
     "title": "Panel & Pyodide & WASM, Oh My!",
@@ -19,9 +21,6 @@ frontmatter = {
     "tags": "c++ python dashboarding visualization panel holoviews pybind11".split(),
     "readtime": 10,
 }
-
-
-callback = None
 
 
 def markdown(txt):
@@ -61,13 +60,13 @@ def cannonball_simulation():
         cb.update(0.1)
         stream.send(pd.DataFrame({"x": [cb.x], "y": [cb.y]}))
         if cb.y <= 0.0:
-            callback.stop()
+            cannonball_callback.stop()
 
     def launch(event):
-        global callback
-        if callback is not None:
-            callback.stop()
-            callback = None
+        global cannonball_callback
+        if cannonball_callback is not None:
+            cannonball_callback.stop()
+            cannonball_callback = None
 
         cb.x = 0.0
         cb.y = 0.0
@@ -77,7 +76,7 @@ def cannonball_simulation():
         cb.vy = launch_speed_slider.value * np.sin(
             np.deg2rad(launch_angle_slider.value)
         )
-        callback = pn.state.add_periodic_callback(cannonball, 33, timeout=5000)
+        cannonball_callback = pn.state.add_periodic_callback(cannonball, 50)
 
     launch_button.on_click(launch)
 
@@ -85,7 +84,12 @@ def cannonball_simulation():
         return hv.Points(data, kdims=["x", "y"])
 
     dmap = hv.DynamicMap(view, streams=[stream]).opts(
-        xlim=(0.0, 50.0), ylim=(0.0, 30.0), width=600, height=480, shared_axes=False
+        xlim=(0.0, 50.0),
+        ylim=(0.0, 30.0),
+        width=600,
+        height=480,
+        shared_axes=False,
+        show_grid=True,
     )
 
     return pn.Row(
@@ -99,33 +103,20 @@ def sandpile_simulation():
             self.n = n
             self.sandpile = np.zeros((n, n), dtype=np.int32) + 4
 
-        def reset(self):
-            self.sandpile = np.zeros_like(self.sandpile, dtype=np.int32) + 4
+        def reset(self, n):
+            self.n = n
+            self.sandpile = np.zeros((n, n), dtype=np.int32) + 4
 
         def perturb(self):
             self.sandpile[*np.random.random_integers(0, self.n - 1, size=2)] += 1
-            self.collapse()
 
-        def viz_perturb(self, stream):
-            # self.sandpile[*np.random.random_integers(0, self.n - 1, size=2)] += 1
-            self.viz_collapse(stream)
-
-        def collapse(self):
+        def stabilize(self):
             while np.any((mask := self.sandpile >= 4)):
-                rows, cols = np.where(mask)
-                for r, c in zip(rows, cols):
-                    self.sandpile[r, c] -= 4
-                    if r < (self.n - 1):
-                        self.sandpile[r + 1, c] + 1
-                    if r > 0:
-                        self.sandpile[r - 1, c] + 1
-                    if c < (self.n - 1):
-                        self.sandpile[r, c + 1] + 1
-                    if c > 0:
-                        self.sandpile[r, c - 1] + 1
+                self.collapse(mask)
 
-        def viz_collapse(self, stream):
-            if np.any((mask := self.sandpile >= 4)):
+        def collapse(self, mask=None):
+            mask = mask if mask else (self.sandpile >= 4)
+            if np.any(mask):
                 rows, cols = np.where(mask)
                 for r, c in zip(rows, cols):
                     self.sandpile[r, c] -= 4
@@ -137,54 +128,65 @@ def sandpile_simulation():
                         self.sandpile[r, c + 1] += 1
                     if c > 0:
                         self.sandpile[r, c - 1] += 1
-                    if not callback.running:
-                        break
 
-                stream.send(self.sandpile)
-
-    asp = Sandpile(10)
+        @property
+        def stable(self):
+            return np.all(self.sandpile < 4)
 
     launch_button = pn.widgets.Button(name="Launch!")
     reset_button = pn.widgets.Button(name="Reset")
+    dimension_slider = pn.widgets.IntSlider(
+        name="Launch Angle (degrees)", start=1, end=50, value=20, step=1
+    )
+
+    asp = Sandpile(dimension_slider.value)
 
     stream = hv.streams.Pipe(data=[])
 
     def sandpile():
-        asp.viz_perturb(stream)
+        global sandpile_callback
+        asp.collapse()
+        stream.send(asp.sandpile)
+        if asp.stable:
+            sandpile_callback.stop()
+            launch_button.name = "Launch!"
+            sandpile_callback = None
 
     def launch(event):
-        global callback
-        if callback is not None and callback.running:
-            callback.stop()
-            callback.running = False
+        global sandpile_callback
+        if sandpile_callback is not None and sandpile_callback.running:
+            sandpile_callback.stop()
+            sandpile_callback.running = False
             launch_button.name = "Launch!"
-        elif callback is not None and not callback.running:
-            callback.start()
+        elif sandpile_callback is not None and not sandpile_callback.running:
+            sandpile_callback.start()
             launch_button.name = "Stop!"
         else:
-            asp.reset()
-            callback = pn.state.add_periodic_callback(sandpile, 33)
+            asp.reset(dimension_slider.value)
+            sandpile_callback = pn.state.add_periodic_callback(sandpile, 50)
             launch_button.name = "Stop!"
 
+    @pn.depends(dimension_slider, watch=True)
     def reset(event):
-        global callback
-        if callback is not None:
-            callback.stop()
-        callback = None
-        asp.reset()
+        global sandpile_callback
+        if sandpile_callback is not None:
+            sandpile_callback.stop()
+        sandpile_callback = None
+        asp.reset(dimension_slider.value)
         stream.send(asp.sandpile)
         launch_button.name = "Launch!"
 
     launch_button.on_click(launch)
     reset_button.on_click(reset)
 
-    def view2(data):
+    def view(data):
         return hv.Image(data)
 
-    dmap2 = hv.DynamicMap(view2, streams=[stream]).opts(
+    dmap = hv.DynamicMap(view, streams=[stream]).opts(
         xlim=(-0.5, 0.5),
         ylim=(-0.5, 0.5),
         clim=(0, 4),
+        cmap="GnBu",
         xaxis="bare",
         yaxis="bare",
         width=600,
@@ -193,27 +195,35 @@ def sandpile_simulation():
         show_grid=True,
     )
 
-    return pn.Row(dmap2, pn.Column(launch_button, reset_button))
+    return pn.Row(dmap, pn.Column(launch_button, reset_button, dimension_slider))
 
 
 main = pn.Column()
 
 main.append(
     pn.pane.Markdown(
-        "# HEY, LISTEN! There is some cool stuff loading, be a little patient!",
+        "# HEY, LISTEN! There is some cool stuff loading; be a little patient!",
         max_width=800,
     )
 )
 
 main.append(
     markdown(
-        """## Blast Off!
+        f"""# {frontmatter["title"]}
 
-Now that I am using `panel` as the core of this blog, the doors are blown pretty wide open as far as what can be done (well, this _could_ all be done before, but now _I_ can do it!). I can't possibly cover everything that `panel` does, but take a peek at the [App Gallery](https://panel.holoviz.org/gallery/index.html) to get an idea. It is pretty incredible how easy `panel` makes everything, which is why I was mildly shocked I never thought about doing this sooner.
+## {frontmatter["date"]}
+
+### {frontmatter["readtime"]} Minutes to Read"""
+    )
+)
+
+main.append(
+    markdown(
+        """Now that I am using `panel` as the core of this blog, the doors are blown pretty wide open as far as what can be done (well, this _could_ all be done before, but now _I_ can do it!). I can't possibly cover everything that `panel` does, but take a peek at the [App Gallery](https://panel.holoviz.org/gallery/index.html) to get an idea. It is pretty incredible how easy `panel` makes everything, which is why I was mildly shocked I never thought about doing this sooner.
 
 There are a ton of new opportunities to not only use `panel` to render the markdown (as `geno` was initially written to do), but we can also render `panel` apps using `pyodide`. This means that interactive applications can be written to run in the browser, instead of serving plain HTML/CSS/JS. This gets even crazier if that interactive application in the browser is also utilizing "native" code targeted at WASM. Ultimately I want to write a `panel` app that I can convert to a `pyodide` application, and I want that application to run a C++ library in real-time so that I can visualize the model and some analysis. **All in the browser**.
 
-Let's not get ahead of ourselves though... first, we need a way of telling `geno` to simply pull in `panel` applications and get them rendered statically, since all we can do now is render markdown. For a simple `panel` app this is actually quite easy since we are technically doing this already for the markdown pages:
+Let's not get ahead of ourselves... first, we need a way of telling `geno` to simply pull in `panel` applications and get them rendered statically, since all we can do now is render markdown. For a simple `panel` app this is actually quite easy since we are technically doing this already for the markdown pages:
 
 ```python
 pn.template.BootstrapTemplate(
@@ -225,7 +235,9 @@ pn.template.BootstrapTemplate(
 
 We use this call in `geno` with the markdown inserted into the `main` component of the final layout. We can have regular "apps" do the same thing. This is pretty trivial. The thing is, this is giving us more static sites. We cut ourselves off from really benefitting from what `panel` can do! We want to be able to actually run the `panel` application as a post - enter [`pyodide`](https://pyodide.org/en/stable/). This stuff is absolutely voodoo to me - all I know is that `pyodide` is a distribution of Python that targets `WebAssembly` instead of your native system. [`WebAssembly`](https://en.wikipedia.org/wiki/WebAssembly) is also voodoo to me, but I like to think of it as a high-performance runtime that is compatible with your web browser (for better or worse, correct or incorrect, this is how I think of it).
 
-So what does this all mean? This means we can write `panel` applications in Python, and then actually run them in our browser using `pyodide`. This deeply contrasts running Python locally on some machine. You may have noticed some odd loading overlay when you first navigated here - well, this page is actually a `panel` application running with `pyodide` within your browser! This means we can do some pretty nifty things - maybe we can implement a cannon-ball simulation, configure it, and be able to run and visualize it all right here:
+So what does this all mean? This means we can write `panel` applications in Python, and then actually run them in our browser using `pyodide`. This deeply contrasts running Python locally on some machine. You may have noticed some odd loading overlay when you first navigated here - well, this page is actually a `panel` application running with `pyodide` within your browser! This means we can do some pretty nifty things - maybe we can implement a cannon-ball simulation, configure it, and be able to run and visualize it all right here.
+
+## Blast Off!
 """
     )
 )
@@ -235,13 +247,36 @@ main.append(cannonball_simulation())
 main.append(
     markdown(
         """Pretty neat, right? I think so. That model was coded in Python and hooked into `panel` and `holoviews`, **and it is running in your browser**. There are some challenges I am still working through though, largely because I am extremely new to `pyodide` and how it all works with `panel`. Namely, your `pyodide` application cannot embed/use local modules/packages; it must be able to install them (effectively) through [PyPI](https://pypi.org/). This means that your entire application needs to be self-contained. This is less of a roadblock and just some new terrain to map out.
-             
-I have some janky ways of injecting the custom CSS and getting the same consistent layout working. It works great, but is _janky and bad_ and I will be looking at different ways of injecting those bits.
-""",
+        
+You _might_ be thinking that the above example was pretty basic. Well, you're definitely correct there. It is really basic. What about something a little more computationally intense? Well, we have that here too. Here is a simple implementation of the [`Abelian Sandpile Model`](https://en.wikipedia.org/wiki/Abelian_sandpile_model). The implementation here uses `numpy` to setup the sandpile (matrix of integers), and just put every cell at the unstable value of 4. Upon launching the sandpile collapses with a spectacular series of waves (increase the dimension see more)!"""
     )
 )
 
 main.append(sandpile_simulation())
+
+main.append(
+    markdown(
+        """This is running live in your browser! I cannot possibly say that enough; it is so cool! No server is running in the backend, no external services are running, nada. This is such a great first step towards the eventual goal of getting C++ into the mix. There is so much stuff to figure out yet before getting there though. General organization of the apps, the frontmatter, the CSS, etc. are all still ultra-janky. Things clearly work great, but it is all definitely _janky and bad_ and I will be looking at different ways of managing everyting.
+
+## How it Works
+
+`geno` is still in charge of ultimately generating and organizing everything, and that includes this application. Instead of just reading markdown files and throwing them into `panel` components, we also find Python files and use the CLI tool `panel convert` to generate the `pyodide` applications. Internal to `geno` this looks like:
+
+```python
+subprocess.run(
+    f"panel convert {self.app} --to pyodide-worker --out {self.source_path.parent}".split()
+)
+```
+
+This takes the `panel` application and runs it through the `pyodide` meat grinder to generate everything necessary to run the application in the browser. Right now I am using a special `<<<css>>>` snippet of text that I do a replacement before the `pyodide` step to use my stylesheets (ick), and I just duplicate the generation of the menu buttons (even more ick). Outside of that, I am just writing a large `panel` application with widgets, plots, plenty of markdown, and lots of ick to just make it work.
+
+## Future
+
+This post is a proof-of-concept to figure out how the main bits and pieces fall into place. It is quite messy, but I am still quite satisfied with the results. The next post (or few) will focus on cleaning up the ick that I added here. I am pretty excited about what is to come!"""
+    )
+)
+
+main.append(markdown(f"\n<script>\n    document.title = '{frontmatter['title']} | NESWare.io';</script>"))
 
 button_config = {
     "button_type": "success",
