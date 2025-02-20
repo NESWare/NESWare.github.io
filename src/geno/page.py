@@ -21,6 +21,9 @@ class Page:
         self.update_md_with_fm()
 
     def update_md_with_fm(self) -> None:
+        if not isinstance(self.md, str):
+            return
+
         if self.readtime:
             self.md = f"### {self.readtime} Minutes to Read\n\n" + self.md
 
