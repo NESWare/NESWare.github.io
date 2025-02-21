@@ -15,7 +15,7 @@ pn.extension()
 frontmatter = {
     "title": "Panel & Pyodide & WASM, Oh My!",
     "section": "blog",
-    "date": datetime.datetime.strptime("2025-02-19", "%Y-%m-%d").date(),
+    "date": datetime.datetime.strptime("2025-02-20", "%Y-%m-%d").date(),
     "tags": "c++ python dashboarding visualization panel holoviews pybind11".split(),
     "readtime": 10,
 }
@@ -36,7 +36,7 @@ def markdown(txt: str) -> pn.pane.Markdown:
     )
 
 def cannonball_simulation() -> None:
-    """Produces a self-contained sub-application for us to embed. This application is a simple cannon-ball simulation that lets users select a launch angle and launch speed for the cannon-ball and then launch it.
+    """Produces a self-contained sub-application for us to embed. This application is a simple cannonball simulation that lets users select a launch angle and launch speed for the cannonball and then launch it.
     """
     class Cannonball:
         def __init__(self, x, y, vx, vy):
@@ -63,14 +63,14 @@ def cannonball_simulation() -> None:
     cannonball = Cannonball(0.0, 0.0, 0.0, 0.0)
 
     # function to schedule periodically; this will be called repeatedly until the simulation is over
-    # it will update the cannon-ball, stream the data, and then stop the callback (if the simulation is over).
+    # it will update the cannonball, stream the data, and then stop the callback (if the simulation is over).
     def update_cannonball():
         cannonball.update(0.1)
         stream.send(pd.DataFrame({"x": [cannonball.x], "y": [cannonball.y]}))
         if cannonball.y <= 0.0:
             cannonball_callback.stop()
 
-    # function to tie to the launch button; this resets the cannon-ball and schedules the simulation
+    # function to tie to the launch button; this resets the cannonball and schedules the simulation
     def launch(event):
         global cannonball_callback
         if cannonball_callback is not None:
@@ -251,9 +251,9 @@ main.append(
     markdown(
         """Now that I am using `panel` as the core of this blog, the doors are blown pretty wide open as far as what can be done (well, this _could_ all be done before, but now _I_ can do it!). I can't possibly cover everything that `panel` does, but take a peek at the [App Gallery](https://panel.holoviz.org/gallery/index.html) to get an idea. It is pretty incredible how easy `panel` makes everything, which is why I was mildly shocked I never thought about doing this sooner.
 
-There are a ton of new opportunities to not only use `panel` to render the markdown (as `geno` was initially written to do), but we can also render `panel` apps using `pyodide`. This means that interactive applications can be written to run in the browser, instead of serving plain HTML/CSS/JS. This gets even crazier if that interactive application in the browser is also utilizing "native" code targeted at WASM. Ultimately I want to write a `panel` app that I can convert to a `pyodide` application, and I want that application to run a C++ library in real-time so that I can visualize the model and some analysis. **All in the browser**.
+There are a ton of new opportunities to not only use `panel` to render the markdown (as `geno` was initially written to do), but we can also "render" `panel` apps using `pyodide`. This means that interactive applications can be written to run in the browser, instead of serving plain HTML/CSS/JS. This gets even crazier if that interactive application in the browser is also utilizing "native" code targeted at WASM. Ultimately I want to write a `panel` application that I can execute with `pyodide`, and I want that application to integrate with a C++ library so that I can visualize the model and perform some analysis in real-time. **All in the browser**.
 
-Let's not get ahead of ourselves... first, we need a way of telling `geno` to simply pull in `panel` applications and get them rendered statically, since all we can do now is render markdown. For a simple `panel` app this is actually quite easy since we are technically doing this already for the markdown pages:
+Let's not get ahead of ourselves... first, we need a way of telling `geno` to simply pull in `panel` applications and get them converted to run with `pyodide`, since all we can do now is render markdown. For a simple `panel` application this is actually quite easy since we are technically doing this already for the markdown pages:
 
 ```python
 pn.template.BootstrapTemplate(
@@ -263,9 +263,9 @@ pn.template.BootstrapTemplate(
 ).save(page.source_path)
 ```
 
-We use this call in `geno` with the markdown inserted into the `main` component of the final layout. We can have regular "apps" do the same thing. This is pretty trivial. The thing is, this is giving us more static sites. We cut ourselves off from really benefitting from what `panel` can do! We want to be able to actually run the `panel` application as a post - enter [`pyodide`](https://pyodide.org/en/stable/). This stuff is absolutely voodoo to me - all I know is that `pyodide` is a distribution of Python that targets `WebAssembly` instead of your native system. [`WebAssembly`](https://en.wikipedia.org/wiki/WebAssembly) is also voodoo to me, but I like to think of it as a high-performance runtime that is compatible with your web browser (for better or worse, correct or incorrect, this is how I think of it).
+We use this call in `geno` with the markdown inserted into the `main` component of the final layout. We can have regular "apps" do the same thing. This is pretty trivial. The thing is, this is giving us more static pages. We cut ourselves off from really benefitting from what `panel` can do! We want to be able to actually run the `panel` application as the post, including all of the callbacks and interactivity you would normally get with a server-backed application - enter [`pyodide`](https://pyodide.org/en/stable/). This stuff is absolutely voodoo to me - all I know is that `pyodide` is a distribution of Python that targets `WebAssembly` instead of your native system. [`WebAssembly`](https://en.wikipedia.org/wiki/WebAssembly) is also voodoo to me, but I like to think of it as a high-performance runtime that is compatible with your web browser (for better or worse, correct or incorrect, this is how I think of it).
 
-So what does this all mean? This means we can write `panel` applications in Python, and then actually run them in our browser using `pyodide`. This deeply contrasts running Python locally on some machine. You may have noticed some odd loading overlay when you first navigated here - well, this page is actually a `panel` application running with `pyodide` within your browser! This means we can do some pretty nifty things - maybe we can implement a cannon-ball simulation, configure it, and be able to run and visualize it all right here.
+So what does this all mean? This means we can write `panel` applications in Python, and then actually run them in our browser using `pyodide`. This deeply contrasts running Python locally on some machine. You may have noticed some odd loading overlay when you first navigated here - well, this page is actually a `panel` application running with `pyodide` within your browser! This means we can do some pretty nifty things - maybe we can implement a cannonball simulation, configure it, and be able to run and visualize it all right here.
 
 ## Blast Off!
 """
@@ -276,7 +276,7 @@ main.append(cannonball_simulation())
 
 main.append(
     markdown(
-        """Pretty neat, right? I think so. That model was coded in Python and hooked into `panel` and `holoviews`, **and it is running in your browser**. There are some challenges I am still working through though, largely because I am extremely new to `pyodide` and how it all works with `panel`. Namely, your `pyodide` application cannot embed/use local modules/packages; it must be able to install them (effectively) through [PyPI](https://pypi.org/). This means that your entire application needs to be self-contained. This is less of a roadblock and just some new terrain to map out.
+        """Pretty neat, right? I think so. That model was coded in Python and hooked into `panel` and `holoviews`, **and it is running in your browser**. There are some challenges I am still working through though, largely because I am extremely new to `pyodide` and how it all works with `panel`. Namely, your application cannot embed/use local modules/packages; it must be able to install them (effectively) through [PyPI](https://pypi.org/). This means that your entire application needs to be self-contained. This is less of a roadblock and moreso just some new terrain to map out.
         
 You _might_ be thinking that the above example was pretty basic. Well, you're definitely correct there. It is really basic. What about something a little more computationally intense? Well, we have that here too. Here is a simple implementation of the [`Abelian Sandpile Model`](https://en.wikipedia.org/wiki/Abelian_sandpile_model). The implementation here uses `numpy` to setup the sandpile (matrix of integers), and just put every cell at the unstable value of 4. Upon launching the sandpile collapses with a spectacular series of waves (increase the dimension see more)!"""
     )
@@ -290,7 +290,7 @@ main.append(
 
 ## How it Works
 
-`geno` is still in charge of ultimately generating and organizing everything, and that includes this application. Instead of just reading markdown files and throwing them into `panel` components, we also find Python files and use the CLI tool `panel convert` to generate the `pyodide` applications. Internal to `geno` this looks like:
+`geno` is still in charge of ultimately generating and organizing everything, and that includes this application. Instead of just reading markdown files and throwing them into `panel` components, we also find Python files and use the CLI tool `panel convert` to generate the necessary `pyodide` code. Internal to `geno` this looks like:
 
 ```python
 subprocess.run(
