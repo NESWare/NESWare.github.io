@@ -155,7 +155,7 @@ def sandpile_simulation():
     launch_button = pn.widgets.Button(name="Launch!")
     reset_button = pn.widgets.Button(name="Reset")
     dimension_slider = pn.widgets.IntSlider(
-        name="Launch Angle (degrees)", start=1, end=50, value=20, step=1
+        name="Dimension", start=1, end=50, value=20, step=1
     )
 
     # create an instance of the Sandpile class to use for the simulation
