@@ -247,13 +247,9 @@ main.append(
 
 ## {{ page.date }}
 
-### {{ page.readtime }} Minutes to Read"""
-    )
-)
+### {{ page.readtime }} Minutes to Read
 
-main.append(
-    markdown(
-        """Now that I am using `panel` as the core of this blog, the doors are blown pretty wide open as far as what can be done (well, this _could_ all be done before, but now _I_ can do it!). I can't possibly cover everything that `panel` does, but take a peek at the [App Gallery](https://panel.holoviz.org/gallery/index.html) to get an idea. It is pretty incredible how easy `panel` makes everything, which is why I was mildly shocked I never thought about doing this sooner.
+Now that I am using `panel` as the core of this blog, the doors are blown pretty wide open as far as what can be done (well, this _could_ all be done before, but now _I_ can do it!). I can't possibly cover everything that `panel` does, but take a peek at the [App Gallery](https://panel.holoviz.org/gallery/index.html) to get an idea. It is pretty incredible how easy `panel` makes everything, which is why I was mildly shocked I never thought about doing this sooner.
 
 There are a ton of new opportunities to not only use `panel` to render the markdown (as `geno` was initially written to do), but we can also "render" `panel` apps using `pyodide`. This means that interactive applications can be written to run in the browser, instead of serving plain HTML/CSS/JS. This gets even crazier if that interactive application in the browser is also utilizing "native" code targeted at WASM. Ultimately I want to write a `panel` application that I can execute with `pyodide`, and I want that application to integrate with a C++ library so that I can visualize the model and perform some analysis in real-time. **All in the browser**.
 
@@ -306,14 +302,9 @@ This takes the `panel` application and runs it through the `pyodide` meat grinde
 
 ## Future
 
-This post is a proof-of-concept to figure out how the main bits and pieces fall into place. It is quite messy, but I am still quite satisfied with the results. The next post (or few) will focus on cleaning up the ick that I added here. I am pretty excited about what is to come!"""
-    )
-)
+This post is a proof-of-concept to figure out how the main bits and pieces fall into place. It is quite messy, but I am still quite satisfied with the results. The next post (or few) will focus on cleaning up the ick that I added here. I am pretty excited about what is to come!
 
-# jank
-main.append(
-    markdown(
-        f"\n<script>\n    document.title = '{{ page.title }} | {{ site.title }}';</script>"
+<script>\n    document.title = '{{ page.title }} | {{ site.title }}';</script>"""
     )
 )
 

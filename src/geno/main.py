@@ -72,7 +72,7 @@ def main():
 
     buttons = []
     # TODO: Update to read "nav" from configuratino
-    for page_name in ["Home", "Blog", "Projects", "About"]:
+    for page_name, page_file in configuration["navigation"]["main"].items():
         button = pn.widgets.Button(name=page_name, **configuration["button"])
         button.js_on_click(
             code=f'window.location = "/{"" if page_name == "Home" else page_name.lower() + ".html"}"'
@@ -86,4 +86,9 @@ def main():
         header=pn.Row(pn.Spacer(width=configuration["button"]["width"]), *buttons),
     )
     for page in site["pages"]["all"]:
-        rt.render(page, site, css.stylesheets)
+        rt.render(
+            page,
+            site,
+            css.stylesheets,
+            sidebar_width=240,
+        )
