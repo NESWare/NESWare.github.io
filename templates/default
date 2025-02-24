@@ -1,0 +1,7 @@
+# {{ page.title }}
+
+{{ content }}
+
+<script>
+    document.title = '{{ page.title }} | {{ site.title }}';
+</script>

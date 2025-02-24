@@ -1,5 +1,5 @@
 title: Writing My Own Static Site Generator with Panel
-section: blog
+layout: blog
 date: 2025-02-18
 tags: python panel
 readtime: 3

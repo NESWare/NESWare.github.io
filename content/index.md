@@ -5,4 +5,6 @@ This is my personal software/tech blog. Expect to see a lot of software and a lo
 
 ---
 
-### Latest Post
+## Latest Post
+
+- ### [{{ site.pages.blog[0].date }} {{ site.pages.blog[0].title }}]( {{ site.pages.blog[0].link }})

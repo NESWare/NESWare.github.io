@@ -1,7 +1,15 @@
+title: Panel & Pyodide & WASM, Oh My!
+section: blog
+date: 2025-02-20
+tags: c++ python dashboarding visualization panel holoviews pybind11
+readtime: 10
+---fm---
+
 # A proof-of-concept (that requires a ton of documentation and comments!)
 #
 
 import datetime
+import pathlib
 
 import holoviews as hv
 import numpy as np
@@ -11,21 +19,16 @@ import pygments
 
 pn.extension()
 
-# frontmatter, implemented directly as a dict
-frontmatter = {
-    "title": "Panel & Pyodide & WASM, Oh My!",
-    "section": "blog",
-    "date": datetime.datetime.strptime("2025-02-20", "%Y-%m-%d").date(),
-    "tags": "c++ python dashboarding visualization panel holoviews pybind11".split(),
-    "readtime": 10,
-}
 
-# stylesheets; janky but we replace this string (the invalid Python) with the actual CSS overrides
-stylesheets = <<<css>>>
-
-# define global callbacks up here, one for each "system" we want to run 
+# define global callbacks up here, one for each "system" we want to run
 cannonball_callback = None
 sandpile_callback = None
+
+
+# fmt: off
+stylesheets = {{ css }}
+# fmt: on
+
 
 def markdown(txt: str) -> pn.pane.Markdown:
     """Simple utility to produce the markdown pane with the same style"""
@@ -35,9 +38,10 @@ def markdown(txt: str) -> pn.pane.Markdown:
         stylesheets=stylesheets,
     )
 
+
 def cannonball_simulation() -> None:
-    """Produces a self-contained sub-application for us to embed. This application is a simple cannonball simulation that lets users select a launch angle and launch speed for the cannonball and then launch it.
-    """
+    """Produces a self-contained sub-application for us to embed. This application is a simple cannonball simulation that lets users select a launch angle and launch speed for the cannonball and then launch it."""
+
     class Cannonball:
         def __init__(self, x, y, vx, vy):
             self.x = x
@@ -114,8 +118,8 @@ def cannonball_simulation() -> None:
 
 
 def sandpile_simulation():
-    """Produces a self-contained sub-application for us to embed. This application is a simple implementation of the Abelian Sandpile Model. Select the size of the sandpile and launch it!
-    """
+    """Produces a self-contained sub-application for us to embed. This application is a simple implementation of the Abelian Sandpile Model. Select the size of the sandpile and launch it!"""
+
     class Sandpile:
         def __init__(self, n):
             self.n = n
@@ -188,7 +192,6 @@ def sandpile_simulation():
             sandpile_callback = pn.state.add_periodic_callback(update_sandpile, 50)
             launch_button.name = "Stop!"
 
-
     # function to tie to the reset button; this resets the sandpile
     # this will automatically trigger whenever the dimension is changed
     @pn.depends(dimension_slider, watch=True)
@@ -227,6 +230,7 @@ def sandpile_simulation():
 
     return pn.Row(dmap, pn.Column(launch_button, reset_button, dimension_slider))
 
+
 # main content that we will ultimately inject into the application. Just start appending to it!
 main = pn.Column()
 
@@ -239,11 +243,11 @@ main.append(
 
 main.append(
     markdown(
-        f"""# {frontmatter["title"]}
+        f"""# {{ page.title }}
 
-## {frontmatter["date"]}
+## {{ page.date }}
 
-### {frontmatter["readtime"]} Minutes to Read"""
+### {{ page.readtime }} Minutes to Read"""
     )
 )
 
@@ -307,7 +311,11 @@ This post is a proof-of-concept to figure out how the main bits and pieces fall 
 )
 
 # jank
-main.append(markdown(f"\n<script>\n    document.title = '{frontmatter['title']} | NESWare.io';</script>"))
+main.append(
+    markdown(
+        f"\n<script>\n    document.title = '{{ page.title }} | {{ site.title }}';</script>"
+    )
+)
 
 # jank
 button_config = {
@@ -324,7 +332,9 @@ for page_name in ["Home", "Blog", "Projects", "About"]:
     )
     buttons.append(button)
 
-pn.template.BootstrapTemplate.config.raw_css.extend(stylesheets)
+pn.template.BootstrapTemplate.config.css_files.extend(
+    ["/assets/css/headers.css", "/assets/css/navbar.css"]
+)
 
 # still need to provide a servable object, so this is the final result!
 pn.template.BootstrapTemplate(

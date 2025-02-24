@@ -1,0 +1,16 @@
+title: NESWare
+logo: assets/images/nesware/nesware-logo-textless-white.png
+favicon: assets/images/nesware/nesware-logo-textless-64px.ico
+header_color: "#FFFFFF"
+header_background: "#009926"
+navigation:
+  main:
+    Home: index.md
+    Blog: blog.md
+    Projects: projects.md
+    About: about.md
+button:
+  button_style: solid
+  width: 120
+  stylesheets:
+    - ":hover { background-color: #e8fff4; }"
