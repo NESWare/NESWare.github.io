@@ -24,7 +24,7 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build geno
         run: |
-          uv run geno
+          uv run geno build geno.yml 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
