@@ -1,44 +1,41 @@
-import argparse
 import pathlib
 import shutil
 
 import panel as pn
 import yaml
 
-from .css import CSS
 from .pages import MarkdownPage, PyodidePage, RenderTemplate
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "configuration", type=pathlib.Path, help="geno configuration file"
-    )
-    inputs = parser.parse_args()
+class CSS:
+    def __init__(self, css_path: pathlib.Path) -> None:
+        self.stylesheets = [open(css).read() for css in css_path.glob("*.css")]
 
-    with open(inputs.configuration) as cf:
-        configuration = yaml.safe_load(cf)
 
+def _make_static() -> pathlib.Path:
     static = pathlib.Path("static")
     if static.exists():
         shutil.rmtree(
             static,
         )
     static.mkdir()
+    return static
 
+
+def run(configuration_path: pathlib.Path) -> None:
+    with open(configuration_path) as cf:
+        configuration = yaml.safe_load(cf)
+
+    content = pathlib.Path("content")
+    css = CSS(pathlib.Path("assets") / "css")
+
+    static = _make_static()
     shutil.copytree("./assets", static / "assets")
     shutil.copy(configuration["favicon"], static / "favicon.ico")
-
     with open(static / ".htaccess", "w") as htaccess:
         htaccess.write("DirectoryIndex index.html")
 
-    css = CSS(pathlib.Path("assets") / "css")
-
-    content = pathlib.Path("content")
-
     site = {"pages": {"all": []}, "title": configuration["title"]}
-
-    # TODO: Update to read "nav" from configuratino
     for page in content.glob("**/*"):
         if "__pycache__" in page.parts:
             continue
@@ -71,7 +68,6 @@ def main():
     blog_pages.sort(key=lambda p: p.date, reverse=True)
 
     buttons = []
-    # TODO: Update to read "nav" from configuratino
     for page_name, page_file in configuration["navigation"]["main"].items():
         button = pn.widgets.Button(name=page_name, **configuration["button"])
         button.js_on_click(
