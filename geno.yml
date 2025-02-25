@@ -10,7 +10,6 @@ navigation:
     Projects: projects.md
     About: about.md
 button:
-  button_style: solid
+  button_type: success
+  button_style: outline
   width: 120
-  stylesheets:
-    - ":hover { background-color: #e8fff4; }"

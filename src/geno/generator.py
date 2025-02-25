@@ -45,8 +45,6 @@ def run(configuration_path: pathlib.Path) -> None:
         match page.suffix:
             case ".md":
                 site["pages"]["all"].append(MarkdownPage(page, dst))
-            # case ".py":
-            #     site["pages"]["all"].append(PythonPage(page, dst))
             case ".py":
                 site["pages"]["all"].append(PyodidePage(page, dst))
             case _:
@@ -69,7 +67,9 @@ def run(configuration_path: pathlib.Path) -> None:
 
     buttons = []
     for page_name, page_file in configuration["navigation"]["main"].items():
-        button = pn.widgets.Button(name=page_name, **configuration["button"])
+        button = pn.widgets.Button(
+            name=page_name, **configuration["button"], stylesheets=css.stylesheets
+        )
         button.js_on_click(
             code=f'window.location = "/{"" if page_name == "Home" else page_name.lower() + ".html"}"'
         )
@@ -79,12 +79,7 @@ def run(configuration_path: pathlib.Path) -> None:
 
     rt = RenderTemplate(
         configuration,
-        header=pn.Row(pn.Spacer(width=configuration["button"]["width"]), *buttons),
+        sidebar=pn.Row(pn.Spacer(width=configuration["button"]["width"]), *buttons),
     )
     for page in site["pages"]["all"]:
-        rt.render(
-            page,
-            site,
-            css.stylesheets,
-            sidebar_width=240,
-        )
+        rt.render(page, site, css.stylesheets, sidebar_width=140)

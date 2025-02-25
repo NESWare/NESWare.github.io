@@ -24,6 +24,7 @@ class RenderTemplate:
     def render(self, page, site, stylesheets, **kwargs):
         page.dst.parent.mkdir(parents=True, exist_ok=True)
         if isinstance(page, MarkdownPage):
-            self.template(main=page.render(site, stylesheets), **kwargs).save(page.dst)
+            tmp = self.template(main=page.render(site, stylesheets), **kwargs)
+            tmp.save(page.dst)
         else:
             page.render(site, stylesheets)

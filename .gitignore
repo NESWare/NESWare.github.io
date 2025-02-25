@@ -2,3 +2,7 @@ static
 *.pyc
 __pycache__
 *.egg-info
+.venv
+
+.mypy_cache
+.ruff_cache
