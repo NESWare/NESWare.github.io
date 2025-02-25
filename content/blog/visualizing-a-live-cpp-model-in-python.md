@@ -1,5 +1,5 @@
 title: Visualizing a Live C++ Model in Python
-section: blog
+layout: blog
 date: 2023-04-16
 tags: c++ python dashboarding visualization simulation model panel holoviews pybind11
 readtime: 20

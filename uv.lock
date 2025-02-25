@@ -181,6 +181,7 @@ source = { editable = "." }
 dependencies = [
     { name = "flask" },
     { name = "holoviews" },
+    { name = "jinja2" },
     { name = "numpy" },
     { name = "pandas" },
     { name = "panel" },
@@ -197,6 +198,7 @@ lint = [
 requires-dist = [
     { name = "flask", specifier = ">=3.1.0" },
     { name = "holoviews", specifier = ">=1.20.1" },
+    { name = "jinja2", specifier = ">=3.1.5" },
     { name = "numpy", specifier = ">=2.2.3" },
     { name = "pandas", specifier = ">=2.2.3" },
     { name = "panel", specifier = ">=1.6.1" },

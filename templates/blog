@@ -1,0 +1,11 @@
+# {{ page.title }}
+
+## {{ page.date }}
+
+### {{ page.readtime }} Minutes to Read
+
+{{ content }}
+
+<script>
+    document.title = '{{ page.title }} | {{ site.title }}';
+</script>

@@ -1,5 +1,5 @@
 title: Writing Pythonic C++
-section: blog
+layout: blog
 date: 2023-03-11
 tags: c++ python
 readtime: 25
